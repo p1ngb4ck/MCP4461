@@ -3,7 +3,6 @@
 
 #include <inttypes.h>
 
-#define DEFAULT_ADDRESS 0x2C  //With A0 and A1 grounded
 #define DEFAULT_WIPER_VALUE 0x80  //Default to the wipers in midrange
 
 // meory addresses (all shifted 4 bits left)
@@ -36,8 +35,7 @@
 
 class MCP4461{
 public:
-  MCP4461();
-  void begin();
+  MCP4461(uint8_t);
   void setMCP4461Address(uint8_t);
   void setVolatileWiper(uint8_t, uint16_t);
   void setNonVolatileWiper(uint8_t, uint16_t);
