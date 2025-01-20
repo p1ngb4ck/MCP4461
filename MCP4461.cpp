@@ -1,5 +1,7 @@
 #include "Arduino.h"
 #include "MCP4461.h"
+#include <stdio.h>
+#include <Wire.h>
 
 /*
 Library to control the MCP4461 Digital Potentiometer over I2C.
@@ -14,21 +16,13 @@ Tony@think3dprint3d.com
 GPL v3
 */
 
-#include <stdio.h>
-#include <Wire.h>
-
 //ensure you call begin() before any other functions but note
 //begin can only be called once for all MCP* objects as it initialises
 //the local master through the Wire library
 //if the MCP4461 does not have a default address, call set address before
 //trying to communicate
-MCP4461::MCP4461() {
-  _mcp4461_address = DEFAULT_ADDRESS;
-}
-
-//initialise the I2C interface as master ie local address is 0
-void MCP4461::begin() {
-    Wire.begin();
+MCP4461::MCP4461(uint8_t i2c_address) {
+  _mcp4461_address = i2c_address;
 }
 
 //set the MCP4461 address
