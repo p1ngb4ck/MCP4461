@@ -22,6 +22,11 @@
 #define MCP4461_NVW3 0x90
 //TCON0: D8: Reserved D7:R3HW D6: R3A D5:R3W D4:R3B D3:R2HW D2:R2A D1:R2W D0: R2B
 #define MCP4461_TCON1 0xA0
+#define MCP4461_EEPROM_DATA_ADDRESS_1 0xB0
+#define MCP4461_EEPROM_DATA_ADDRESS_2 0xC0
+#define MCP4461_EEPROM_DATA_ADDRESS_3 0xD0
+#define MCP4461_EEPROM_DATA_ADDRESS_4 0xE0
+#define MCP4461_EEPROM_DATA_ADDRESS_5 0xF0
 
 //control commands
 #define MCP4461_WRITE 0x0
@@ -38,9 +43,17 @@ public:
   void setNonVolatileWiper(uint8_t, uint16_t);
   void setVolatileWipers(uint16_t);
   void setNonVolatileWipers(uint16_t);
-  void toggleWiper(uint8_t); //NOT YET IMPLEMENTED
+  uint8_t getTerminalRegister(uint8_t);
+  void setTerminalRegister(uint8_t, uint8_t);
+  bool getTerminalState(uint8_t, char);
+  void setTerminalState(uint8_t, char, uint8_t);
+  void connectWiper(uint8_t);
+  void disconnectWiper(uint8_t);
+  void toggleWiper(uint8_t);
   uint16_t getVolatileWiper(uint8_t);
   uint16_t getNonVolatileWiper(uint8_t) const;
+  uint16_t getEEPRomGeneralPurposeData(uint8_t);
+  void setEEPRomGeneralPurposeData(uint8_t, uint16_t);
   uint8_t getStatus();
   bool getEEPRomWriteActive();
 
