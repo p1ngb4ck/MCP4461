@@ -2,6 +2,7 @@
 #define MCP4461_H
 
 #include <inttypes.h>
+#include <Wire.h>
 
 #define DEFAULT_WIPER_VALUE 0x80  //Default to the wipers in midrange
 
@@ -28,6 +29,7 @@
 class MCP4461{
 public:
   MCP4461(uint8_t);
+  void begin(TwoWire &wire);
   void setMCP4461Address(uint8_t);
   uint16_t readAddress(uint8_t);
   void writeValue(uint8_t, uint16_t);
@@ -48,6 +50,7 @@ public:
   void setEEPRomGeneralPurposeData(uint8_t, uint16_t);
 
 private:
+  TwoWire *_wire_bus;
   uint8_t _mcp4461_address;
   uint8_t _wiper;
   uint8_t _value;
