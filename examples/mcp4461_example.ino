@@ -8,11 +8,12 @@
 // 0x2F (both address pins floating/VDD)
 uint8_t i2c_address = 0x2C;
 
-MCP4461 digipot = MCP4461::MCP4461(i2c_address);
+MCP4461 digipot(i2c_address);
 
 void setup() {
   Serial.begin(115200);
   Wire.begin();
+  digipot.begin(Wire);
 }
 
 void loop() {
