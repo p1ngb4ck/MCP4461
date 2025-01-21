@@ -25,6 +25,10 @@ MCP4461::MCP4461(uint8_t i2c_address) {
   _mcp4461_address = i2c_address;
 }
 
+void MCP4461::begin(TwoWire &wire) {
+	_wire_bus = &wire;
+}
+
 //set the MCP4461 address
 void MCP4461::setMCP4461Address(uint8_t mcp4461_addr) {
 	_mcp4461_address = mcp4461_addr;
@@ -35,14 +39,14 @@ uint16_t MCP4461::readAddress(uint8_t address) {
   uint16_t cmdByte = 0;
   cmdByte |= address;
   cmdByte |= MCP4461_READ;
-  Wire.beginTransmission(_mcp4461_address);
-  Wire.write(cmdByte);
-  Wire.endTransmission(false);
-  Wire.requestFrom((uint8_t)_mcp4461_address,(uint8_t)2);
+  _wire_bus->beginTransmission(_mcp4461_address);
+  _wire_bus->write(cmdByte);
+  _wire_bus->endTransmission(false);
+  _wire_bus->requestFrom((uint8_t)_mcp4461_address,(uint8_t)2);
   int i = 0;
-  while(Wire.available()) 
+  while(_wire_bus->available()) 
   { 
-    ret |= Wire.read();
+    ret |= _wire_bus->read();
     if (i==0) ret = ret<<8;
     i++;
   }
@@ -56,10 +60,10 @@ void MCP4461::writeValue(uint8_t addressByte, uint16_t data) {
 	else commandByte = 0;
 	commandByte |= addressByte;
 	commandByte |= MCP4461_WRITE;
-	Wire.beginTransmission(_mcp4461_address);
-	Wire.write(commandByte);
-	Wire.write(dataByte);
-	Wire.endTransmission();
+	_wire_bus->beginTransmission(_mcp4461_address);
+	_wire_bus->write(commandByte);
+	_wire_bus->write(dataByte);
+	_wire_bus->endTransmission();
 	while(getEEPRomWriteActive()) {
 	  delayMicroseconds(1);
 	}
