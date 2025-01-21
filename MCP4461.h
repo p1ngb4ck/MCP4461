@@ -6,7 +6,7 @@
 
 #define DEFAULT_WIPER_VALUE 0x80  //Default to the wipers in midrange
 
-// meory addresses (all shifted 4 bits left)
+//memory addresses (all shifted 4 bits left)
 //For all the Wipers 0x100 = Full scale, 0x80 = mid scale, 0x0 = Zero scale
 #define MCP4461_VW0 0x00
 #define MCP4461_VW1 0x10
@@ -28,28 +28,35 @@
 
 class MCP4461{
 public:
-  MCP4461(uint8_t);
+  MCP4461(uint8_t i2c_address);
   void begin(TwoWire &wire);
-  void setMCP4461Address(uint8_t);
-  uint16_t readAddress(uint8_t);
-  void writeValue(uint8_t, uint16_t);
-  uint16_t getWiper(uint8_t, bool);
-  void setWiper(uint8_t, uint16_t, bool);
-  void setWipers(uint16_t, bool);
+  void setMCP4461Address(uint8_t mcp4461_addr);
+  uint16_t getWiper(uint8_t wiper, bool nonvolatile = false);
+  void setWiper(uint8_t wiper, uint16_t wiper_value, bool nonvolatile = false);
+  void setWipers(uint16_t wiper_value, bool nonvolatile = false);
+  void incrementWiper(uint8_t wiper);
+  void incrementWipers();
+  void decrementWiper(uint8_t wiper);
+  void decrementWipers();
   uint8_t getStatus();
   bool getEEPRomWriteActive();
-  uint8_t getTerminalRegister(uint8_t);
-  void setTerminalRegister(uint8_t, uint8_t);
-  uint8_t getTerminalState(uint8_t, char);
-  uint8_t getTerminalStateBitNumber(uint8_t, char);
-  void setTerminalState(uint8_t, char, uint8_t);
-  void connectWiper(uint8_t);
-  void disconnectWiper(uint8_t);
-  void toggleWiper(uint8_t);
-  uint16_t getEEPRomGeneralPurposeData(uint8_t);
-  void setEEPRomGeneralPurposeData(uint8_t, uint16_t);
+  uint8_t getTerminalRegister(uint8_t reg);
+  void setTerminalRegister(uint8_t reg, uint8_t value);
+  uint8_t getTerminalState(uint8_t wiper, char terminal);
+  void setTerminalState(uint8_t wiper, char terminal, uint8_t state);
+  void connectWiper(uint8_t wiper);
+  void disconnectWiper(uint8_t wiper);
+  void toggleWiper(uint8_t wiper);
+  uint16_t getEEPRomGeneralPurposeData(uint8_t location);
+  void setEEPRomGeneralPurposeData(uint8_t location, uint16_t value);
 
 private:
+  uint16_t readAddress(uint8_t address);
+  void writeValue(uint8_t addressByte, uint16_t data);
+  void increment(uint8_t addressByte);
+  void decrement(uint8_t addressByte);
+  uint8_t getAddressByteForWiper(uint8_t wiper, bool nonvolatile = false);
+  uint8_t getTerminalStateBitNumber(uint8_t wiper, char terminal);
   TwoWire *_wire_bus;
   uint8_t _mcp4461_address;
   uint8_t _wiper;
