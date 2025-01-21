@@ -6,21 +6,16 @@
 /*
 Library to control the MCP4461 Digital Potentiometer over I2C.
 http://ww1.microchip.com/downloads/en/DeviceDoc/22265a.pdf
-This library does not fully implement the functionality of
-the MCP4461 just the basics of changing the wiper values.
-The master joins the bus with the default address of 0
+This library implements all functionality required, except for HV cmds
 
 No warranty given or implied, use at your own risk.
 
-Tony@think3dprint3d.com
-GPL v3
+based on ideas from code by Tony@think3dprint3d.com
+major code rewrite by kleinecke.oliver@googlemail.com
+MIT license
 */
 
-//ensure you call begin() before any other functions but note
-//begin can only be called once for all MCP* objects as it initialises
-//the local master through the Wire library
-//if the MCP4461 does not have a default address, call set address before
-//trying to communicate
+
 MCP4461::MCP4461(uint8_t i2c_address) {
   _mcp4461_address = i2c_address;
 }
@@ -29,7 +24,6 @@ void MCP4461::begin(TwoWire &wire) {
 	_wire_bus = &wire;
 }
 
-//set the MCP4461 address
 void MCP4461::setMCP4461Address(uint8_t mcp4461_addr) {
 	_mcp4461_address = mcp4461_addr;
 }
@@ -69,25 +63,55 @@ void MCP4461::writeValue(uint8_t addressByte, uint16_t data) {
 	}
 }
 
+void MCP4461::increment(uint8_t addressByte) {
+	uint8_t commandByte = 0;
+	commandByte |= addressByte;
+	commandByte |= MCP4461_INCREMENT;
+	_wire_bus->beginTransmission(_mcp4461_address);
+	_wire_bus->write(commandByte);
+	_wire_bus->endTransmission();
+}
+
+void MCP4461::decrement(uint8_t addressByte) {
+	uint8_t commandByte = 0;
+	commandByte |= addressByte;
+	commandByte |= MCP4461_DECREMENT;
+	_wire_bus->beginTransmission(_mcp4461_address);
+	_wire_bus->write(commandByte);
+	_wire_bus->endTransmission();
+}
+
+void MCP4461::decrementWiper(uint8_t wiper) {
+	uint8_t addressByte;
+	addressByte = getAddressByteForWiper(wiper);
+	return decrement(addressByte);
+}
+
+void MCP4461::decrementWipers() {
+  uint8_t i = 0;
+  while (i < 4) {
+	  decrementWiper(i);
+	  i++;
+  }
+}
+
+void MCP4461::incrementWiper(uint8_t wiper) {
+	uint8_t addressByte;
+	addressByte = getAddressByteForWiper(wiper);
+	return increment(addressByte);
+}
+
+void MCP4461::incrementWipers() {
+  uint8_t i = 0;
+  while (i < 4) {
+	  incrementWiper(i);
+	  i++;
+  }
+}
+
 uint16_t MCP4461::getWiper(uint8_t wiper, bool nonvolatile = false) {
 	uint8_t addressByte;
-	switch (wiper) {
-		case 0:
-			addressByte = MCP4461_VW0;
-			break;
-		case 1:
-			addressByte = MCP4461_VW1;
-			break;
-		case 2:
-			addressByte = MCP4461_VW2;
-			break;
-		case 3:
-			addressByte = MCP4461_VW3;
-			break;
-		default: 
-			return;
-	}
-	if(nonvolatile) addressByte = addressByte + 0x20;
+	addressByte = getAddressByteForWiper(wiper, nonvolatile);
 	return readAddress(addressByte);
 }
 
@@ -95,7 +119,13 @@ void MCP4461::setWiper(uint8_t wiper, uint16_t wiper_value, bool nonvolatile = f
   if (wiper_value > 257) return; //max 257 taps allowed
   uint8_t dataByte = (uint8_t)wiper_value;
   uint8_t addressByte;
-  switch (wiper) {
+  addressByte = getAddressByteForWiper(wiper, nonvolatile);
+  writeValue(addressByte, dataByte);
+}
+
+uint8_t MCP4461::getAddressByteForWiper(uint8_t wiper, bool nonvolatile = false) {
+	uint8_t addressByte;
+	switch (wiper) {
       case 0:
 		addressByte = MCP4461_VW0;
         break;
@@ -112,10 +142,10 @@ void MCP4461::setWiper(uint8_t wiper, uint16_t wiper_value, bool nonvolatile = f
         return;
   }
   if(nonvolatile) addressByte = addressByte + 0x20;
-  writeValue(addressByte, dataByte);
+  return addressByte;
 }
 
-void MCP4461::setWipers(uint16_t wiper_value, bool nonvolatile = false ){
+void MCP4461::setWipers(uint16_t wiper_value, bool nonvolatile = false ) {
   uint16_t value = wiper_value;
   uint8_t i = 0;
   while (i < 4) {
