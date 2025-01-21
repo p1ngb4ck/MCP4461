@@ -1,0 +1,21 @@
+{
+    "name": "MCP4461",
+    "version": "1.0.0",
+    "description": "provides all functionality to use MCP4461 i2c quad potentiometers",
+    "keywords": "MCP4461, I2C, potentiometer, rheostat",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/p1ngb4ck/MCP4461"
+    },
+    "authors": [
+      {
+        "name": "Oliver Kleinecke",
+        "email": "oliver.kleinecke@googlemail.com",
+        "maintainer": true
+      }
+    ],
+    "license": "GPLv3",
+    "frameworks": "arduino",
+    "platforms": "avr",
+    "dependencies": {}
+}
