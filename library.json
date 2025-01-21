@@ -1,6 +1,6 @@
 {
     "name": "MCP4461",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "provides all functionality to use MCP4461 i2c quad potentiometers",
     "keywords": "MCP4461, I2C, potentiometer, rheostat",
     "repository": {
