@@ -28,8 +28,20 @@ void loop() {
   digipot.setWiper(0, wiper0Val, true);
 
   //set all wipers to same value
-  digipot.setWipers(wiper0Val, true)
+  digipot.setWipers(wiper0Val, true);
 
+  //increment wiper 0 - increment/decrement is allowed for volatile wiper only !
+  digipot.incrementWiper(0);
+
+  //decrement wiper 0 - increment/decrement is allowed for volatile wiper only !
+  digipot.decrementWiper(0);
+
+  //increment all wipers - increment/decrement is allowed for volatile wiper only !
+  digipot.incrementWipers();
+
+  //decrement all wipers - increment/decrement is allowed for volatile wiper only !
+  digipot.decrementWipers();
+  
   // get 1byte status register - see datasheet
   uint8_t statusByte = digipot.getStatus();
   printLSBByteAsMSB(statusByte);
