@@ -135,11 +135,10 @@ uint16_t MCP4461::getWiper(uint8_t wiper, bool nonvolatile = false) {
 }
 
 void MCP4461::setWiper(uint8_t wiper, uint16_t wiper_value, bool nonvolatile = false){
-  if (wiper_value > 257) return; //max 257 taps allowed
-  uint8_t dataByte = (uint8_t)wiper_value;
+  if (wiper_value > 256) return; //max 257 taps allowed (256 + "0" as a state = 257 taps)
   uint8_t addressByte;
   addressByte = getAddressByteForWiper(wiper, nonvolatile);
-  writeValue(addressByte, dataByte);
+  writeValue(addressByte, wiper_value);
 }
 
 uint8_t MCP4461::getAddressByteForWiper(uint8_t wiper, bool nonvolatile = false) {
@@ -173,10 +172,10 @@ void MCP4461::setWipers(uint16_t wiper_value, bool nonvolatile = false ) {
   }
 }
 
-uint8_t MCP4461::getStatus() {
+uint16_t MCP4461::getStatus() {
   uint16_t ret;
   ret = readAddress(MCP4461_STATUS);
-  return (ret & 0x00ff);
+  return ret;
 }
 
 bool MCP4461::getEEPRomWriteActive() {
