@@ -1,3 +1,5 @@
+//Example for MCP4461 library usage
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <MCP4461.h>
