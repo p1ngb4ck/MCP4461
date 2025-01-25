@@ -38,7 +38,7 @@ public:
   void incrementWipers();
   void decrementWiper(uint8_t wiper);
   void decrementWipers();
-  uint8_t getStatus();
+  uint16_t getStatus();
   bool getEEPRomWriteActive();
   uint8_t getTerminalRegister(uint8_t reg);
   void setTerminalRegister(uint8_t reg, uint8_t value);
