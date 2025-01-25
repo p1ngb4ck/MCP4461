@@ -9,6 +9,7 @@
 uint8_t i2c_address = 0x2C;
 
 MCP4461 digipot(i2c_address);
+uint16_t status_register;
 
 void setup() {
   Serial.begin(115200);
@@ -17,6 +18,32 @@ void setup() {
 }
 
 void loop() {
+  //get && understand status register =)
+  status_register = digipot.getStatus();
+  Serial.println("Status-Register: ");
+  //(1) means, bit is locked to value 1
+  // Bit 0 is WP status (=>pin)
+  // Bit 1 is named "R-1"-pin in datasheet an declared "reserved" and forced to 1
+  // Bit 2 is WiperLock-Status resistor-network 0
+  // Bit 3 is WiperLock-Status resistor-network 1
+  // Bit 4 is EEPROM-Write-Active-Status bit
+  // Bit 5 is WiperLock-Status resistor-network 2
+  // Bit 6 is WiperLock-Status resistor-network 3
+  // Bit 7+8 are referenced in datasheet as D7 + D8 and both locked to 1
+  // Default status register reading should be 0x182h or 386 decimal
+  // "Default" means  without any WiperLocks or WriteProtection enabled and EEPRom not active writing
+  uint8_t bitNum = 9;
+  Serial.println("D8(1) : D7(1) : WL3 : WL2 : EEWA : WL1 : WL0 : R-1(1) : WP");
+  while(bitNum >= 1) {
+    bool b = bitRead(status_register, (bitNum - 1));
+    Serial.print(b);
+    if(bitNum > 1) Serial.print(" : ");
+    bitNum--;
+  }
+  Serial.println("");
+  Serial.print("As Int: ");
+  Serial.println(status_register);
+  
   //get current value of wiper {0-3}, 2nd param is nonvolatile=false per default, set to true to get nonvolatile wiper value
   uint16_t wiper0Val;
   wiper0Val = digipot.getWiper(0, true);
